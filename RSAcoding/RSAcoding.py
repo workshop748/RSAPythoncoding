@@ -58,7 +58,7 @@ def Encrypt():
          return
    publicKeyFile = publicKey[choice-1]
 
-   with open(publicKey,"rb") as pubFile:
+   with open(publicKeyFile,"rb") as pubFile:
        public_key =RSA.importKey(pubFile.read())
    
    message = input("please enter a message").encode()
@@ -106,7 +106,7 @@ def Decrypt():
    except ValueError as e:
         print(f"there was an error {e}")
    
-   cipherText = cipher.encrypt(message)
+
 
       
    print("The message has been encrypted and saved to a file")
