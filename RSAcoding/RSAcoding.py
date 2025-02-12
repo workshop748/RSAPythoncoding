@@ -73,8 +73,43 @@ def Encrypt():
    print("The message has been encrypted and saved to a file")
 
     
-def Decrypt(cipherText, privateKey):
-    plainText = privateKey.decrypt(cipherText)
+def Decrypt():
+   private_key=files("private")
+   
+   if not private_key:
+       print("No public pem file found, please generate text first")
+       return
+   print("These are the private keys found that are aviable")
+
+   for i,key_file in enumerate(private_key, start =1):
+       print(f"{i}. {key_file}")
+
+   choice = int(input("Please select the private key you would like to use: "))
+
+   if choice<1 or choice>len(private_key):
+        print("Invalid choice")
+        return
+   Private_key_file = private_key[choice-1]
+
+   with open(Private_key_file,"rb") as priv_file:
+       privateKey =RSA.importKey(priv_file.read())
+   
+   try:
+        filename = input("please enter your file name you want to decrypt")
+        with open(filename,"rb") as cipher_file:
+            ciphertexting= cipher_file.read()
+        cipher=PKCS1_OAEP.new(privateKey)
+        message=cipher.decrypt(ciphertexting)
+        print(f"the plaintext message: {message}")
+   except FileNotFoundError:
+        print("the file was not found")
+   except ValueError as e:
+        print(f"there was an error {e}")
+   
+   cipherText = cipher.encrypt(message)
+
+      
+   print("The message has been encrypted and saved to a file")
 while True:  
     print(" welcome to the RSA encryption/decryption program")
     print(" Please select an option")
@@ -84,35 +119,14 @@ while True:
     print("4. Exit")
     choice = input()
     if choice == "1":
+        ##generate the key pairs
         Generate()
     elif choice == "2":
+        ## Encrypting the message
         Encrypt()
     elif choice == "3":
-        if pemPresnt():
-            ## decypting the message
-            looking ="private"
-            namefile=""
-            possiblefiles = files(looking)
-            if possiblefiles == None:
-                print("there was no private pem to be found\n Please generate keys first")
-            else:
-                print(" there where PEM files found\n what decryption private key do you want to use")
-                for files in possiblefiles:
-                    print(f"{possiblefiles.index(files)+1}: {files}")
-                choice = input("enter choice here")
-                if choice == "1":
-                    key = RSA.import_key(possiblefiles[0])
-                    namefile=possiblefiles[0]
-                elif choice == "2":
-                     key = RSA.import_key(possiblefiles[1])
-                     namefile=possiblefiles[1]
-                elif choice == "3":
-                    key = RSA.import_key(possiblefiles[2])
-                    namefile=possiblefiles[0]
-                else:
-                       print("Invalid choice")
-        else:
-            print("No pem file present")
+        ## decypting the message
+        Decrypt()
     elif choice == "4":
         print("Goodbye and thank you for playing around with RSA encryption")
         break
